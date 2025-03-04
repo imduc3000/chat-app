@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Code Share Chat</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="form">
+        <div class="title-container">
+            <h1 class="typewriter">Code Paste</h1>
+        </div>
+        
+        <form id="login-form" class="form__content">
+            <div class="form__box">
+               <input type="text" class="form__input" id="username" placeholder="Enter username">
+               <label for="username" class="form__label">ENTER USERNAME</label>
+               <div class="form__shadow"></div> 
+            </div>
+            <div class="form__box">
+                <input type="text" class="form__input" id="room" placeholder="Enter room code">
+                <label for="room" class="form__label">ENTER ROOM CODE</label>
+                <div class="form__shadow"></div> 
+             </div>
+
+             <div class="form__button">
+                <input type="submit" class="form__submit" value="Join Room">
+             </div>
+        </form>    
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value.trim();
+            const room = document.getElementById('room').value.trim();
+            
+            if (!username || !room) {
+                if (!username) {
+                    alert('Username is required');
+                }
+                if (!room) {
+                    alert('Room code is required');
+                }
+                return;
+            }
+
+            localStorage.setItem('chat_username', username);
+            localStorage.setItem('chat_room', room);
+            
+            window.location.href = '/chat';
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Room</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/java.min.js"></script>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h1>Code Share Chat</h1>
+            <div class="room-info">
+                Room: <span id="room-code"></span>
+            </div>
+        </div>
+
+        <ul id="messages"></ul>
+        
+        <form id="chat-form">
+            <div class="chat-input-container">
+                <textarea 
+                    id="chat-mes" 
+                    placeholder="Send a message..."
+                    rows="1"
+                ></textarea>
+                <button id="send-chat">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
+                    </svg>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        // Kiểm tra xem người dùng đã đăng nhập chưa
+        const name = localStorage.getItem('chat_username');
+        const room = localStorage.getItem('chat_room');
+        
+        if (!name || !room) {
+            window.location.href = '/';
+        } else {
+            // Hiển thị mã phòng
+            document.getElementById('room-code').textContent = room;
+        }
+
+        const socket = io();
+        socket.emit('join-room', { name, room });
+
+        const chatForm = document.querySelector('#chat-form');
+        const chatMes = document.querySelector('#chat-mes');
+        const messages = document.querySelector('#messages');
+
+        chatForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const message = chatMes.value;
+            if (message.trim()) {
+                socket.emit('on-chat', {
+                    name,
+                    room,
+                    message
+                });
+                chatMes.value = '';
+            }
+        });
+
+        chatMes.addEventListener('keydown', (e) => {
+            // Nếu nhấn Enter và không nhấn Shift
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                chatForm.dispatchEvent(new Event('submit'));
+            }
+        });
+
+        socket.on('user-chat', (message) => {
+            const chatItem = document.createElement('li');
+            
+            // Kiểm tra xem có phải code hay không bằng cách phát hiện định dạng
+            function detectCodeLanguage(text) {
+                // Các pattern phổ biến để nhận diện code
+                const patterns = {
+                    javascript: /(const|let|var|function|=>|\{|\}|console\.log)/,
+                    python: /(def|import|class|print|if.*:|for.*in)/,
+                    java: /(public|class|void|String|int|boolean)/,
+                    html: /(<.*>|<\/.*>)/,
+                    css: /({.*}|#.*{|\..*{|@media|:hover)/,
+                    c: /(#include|void|int|char|struct|printf|scanf|malloc|free|return 0;)/
+                };
+
+                // Kiểm tra từng pattern
+                for (let lang in patterns) {
+                    if (patterns[lang].test(text)) {
+                        return lang;
+                    }
+                }
+                
+                // Nếu có nhiều dấu tab/space ở đầu dòng, có thể là code
+                if (/^[ \t]+./m.test(text)) {
+                    return 'code';
+                }
+
+                return null;
+            }
+
+            const messageText = message.message.trim();
+            const detectedLang = detectCodeLanguage(messageText);
+
+            if (detectedLang) {
+                // Nếu là code, hiển thị trong code block nhưng không hiển thị tên ngôn ngữ
+                chatItem.innerHTML = `
+                    <div class="message-header">${message.name}:</div>
+                    <div class="code-container">
+                        <div class="code-header">
+                            <button class="copy-btn">Copy</button>
+                        </div>
+                        <pre><code class="language-${detectedLang}">${escapeHtml(messageText)}</code></pre>
+                    </div>
+                `;
+
+                setTimeout(() => {
+                    const codeBlock = chatItem.querySelector('pre code');
+                    hljs.highlightElement(codeBlock);
+                }, 0);
+
+                chatItem.querySelector('.copy-btn').addEventListener('click', function() {
+                    const codeText = chatItem.querySelector('pre code').textContent;
+                    navigator.clipboard.writeText(codeText)
+                        .then(() => {
+                            const originalText = this.textContent;
+                            this.textContent = 'Copied!';
+                            setTimeout(() => {
+                                this.textContent = originalText;
+                            }, 2000);
+                        })
+                        .catch(err => console.error('Failed to copy:', err));
+                });
+            } else {
+                // Nếu là tin nhắn thường
+                chatItem.innerHTML = `
+                    <div class="message-header">${message.name}:</div>
+                    <div class="message-content">${messageText}</div>
+                `;
+            }
+
+            messages.appendChild(chatItem);
+            messages.scrollTop = messages.scrollHeight;
+        });
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html> 
