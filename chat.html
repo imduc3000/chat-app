@@ -24,6 +24,12 @@
         
         <form id="chat-form">
             <div class="chat-input-container">
+                <input type="file" id="file-upload" style="display: none;">
+                <label for="file-upload" class="file-upload-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                    </svg>
+                </label>
                 <textarea 
                     id="chat-mes" 
                     placeholder="Send a message..."
@@ -34,6 +40,12 @@
                         <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
                     </svg>
                 </button>
+            </div>
+            <div id="file-preview-container" style="display: none;">
+                <div class="file-preview">
+                    <span id="file-name"></span>
+                    <button id="cancel-upload" type="button">Cancel</button>
+                </div>
             </div>
         </form>
     </div>
@@ -57,9 +69,69 @@
         const chatForm = document.querySelector('#chat-form');
         const chatMes = document.querySelector('#chat-mes');
         const messages = document.querySelector('#messages');
+        const fileUpload = document.querySelector('#file-upload');
+        const filePreviewContainer = document.querySelector('#file-preview-container');
+        const fileName = document.querySelector('#file-name');
+        const cancelUpload = document.querySelector('#cancel-upload');
+
+        // Xử lý khi người dùng chọn file
+        fileUpload.addEventListener('change', function(e) {
+            if (this.files.length > 0) {
+                const file = this.files[0];
+                // Kiểm tra kích thước file (giới hạn ở 10MB)
+                if (file.size > 10 * 1024 * 1024) {
+                    alert('File không được lớn hơn 10MB');
+                    fileUpload.value = '';
+                    return;
+                }
+                
+                fileName.textContent = file.name;
+                filePreviewContainer.style.display = 'block';
+            }
+        });
+
+        // Xử lý khi người dùng hủy việc upload file
+        cancelUpload.addEventListener('click', function() {
+            fileUpload.value = '';
+            filePreviewContainer.style.display = 'none';
+        });
 
         chatForm.addEventListener('submit', (e) => {
             e.preventDefault();
+            
+            // Kiểm tra xem có file được chọn không
+            if (fileUpload.files.length > 0) {
+                const file = fileUpload.files[0];
+                
+                // Tạo FormData để gửi file
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                // Gửi file lên server
+                fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(fileInfo => {
+                    // Thông báo với các người dùng khác về file được chia sẻ
+                    socket.emit('file-share', {
+                        name,
+                        room,
+                        fileInfo
+                    });
+                    
+                    // Reset form
+                    fileUpload.value = '';
+                    filePreviewContainer.style.display = 'none';
+                })
+                .catch(error => {
+                    console.error('Error uploading file:', error);
+                    alert('Lỗi khi tải file lên');
+                });
+            }
+            
+            // Gửi tin nhắn văn bản nếu có
             const message = chatMes.value;
             if (message.trim()) {
                 socket.emit('on-chat', {
@@ -77,6 +149,32 @@
                 e.preventDefault();
                 chatForm.dispatchEvent(new Event('submit'));
             }
+        });
+
+        // Nhận thông báo khi có file được chia sẻ
+        socket.on('file-shared', ({ name, fileInfo }) => {
+            const chatItem = document.createElement('li');
+            
+            // Tính toán kích thước file dễ đọc
+            const fileSize = formatFileSize(fileInfo.size);
+            
+            chatItem.innerHTML = `
+                <div class="message-header">${name}:</div>
+                <div class="file-message">
+                    <div class="file-info">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+                            <polyline points="13 2 13 9 20 9"></polyline>
+                        </svg>
+                        <span>${fileInfo.originalname}</span>
+                        <span class="file-size">${fileSize}</span>
+                    </div>
+                    <a href="${fileInfo.path}" class="download-btn" download="${fileInfo.originalname}">Tải xuống</a>
+                </div>
+            `;
+            
+            messages.appendChild(chatItem);
+            messages.scrollTop = messages.scrollHeight;
         });
 
         socket.on('user-chat', (message) => {
@@ -157,6 +255,13 @@
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
+        }
+        
+        // Hàm định dạng kích thước file
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+            else return (bytes / 1048576).toFixed(1) + ' MB';
         }
     </script>
 </body>

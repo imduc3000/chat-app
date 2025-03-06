@@ -505,3 +505,97 @@ body {
     background: #18191c;
 }
 
+/* Style cho phần upload file */
+.chat-input-container {
+    background-color: #40444b;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    margin: 0 16px;
+}
+
+.file-upload-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    margin-right: 10px;
+    color: #b9bbbe;
+    transition: color 0.2s;
+}
+
+.file-upload-btn:hover {
+    color: #dcddde;
+}
+
+#file-preview-container {
+    margin: 8px 16px;
+    padding: 8px 16px;
+    background-color: #2f3136;
+    border-radius: 4px;
+}
+
+.file-preview {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#file-name {
+    color: #dcddde;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 80%;
+}
+
+#cancel-upload {
+    background-color: #4f545c;
+    border: none;
+    color: #dcddde;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+#cancel-upload:hover {
+    background-color: #5d6269;
+}
+
+.file-message {
+    background-color: #2f3136;
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 5px;
+}
+
+.file-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.file-size {
+    color: #72767d;
+    font-size: 0.9em;
+}
+
+.download-btn {
+    display: inline-block;
+    padding: 6px 12px;
+    background-color: #5865f2;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 0.9em;
+    transition: background-color 0.2s;
+}
+
+.download-btn:hover {
+    background-color: #4752c4;
+}
+
