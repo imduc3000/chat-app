@@ -59,30 +59,55 @@ app.post('/upload', upload.single('file'), (req, res) => {
 
 // Socket.io handlers
 io.on('connection', (socket) => {
-    console.log('User connected');
+    console.log('User connected:', socket.id);
 
     socket.on('join-room', ({ name, room }) => {
-        socket.join(room);
-        console.log(`${name} joined room: ${room}`);
-        // Thông báo cho phòng có người mới tham gia
-        io.to(room).emit('user-chat', { 
-            name: 'System', 
-            message: `${name} has joined the room` 
-        });
+        try {
+            socket.join(room);
+            console.log(`${name} joined room: ${room}`);
+            // Thông báo cho phòng có người mới tham gia
+            io.to(room).emit('user-chat', { 
+                name: 'System', 
+                message: `${name} has joined the room` 
+            });
+        } catch (error) {
+            console.error('Error joining room:', error);
+        }
     });
 
     socket.on('on-chat', ({ name, room, message }) => {
-        const isCode = message.includes('```');
-        const formattedMessage = isCode 
-            ? message.replace(/\r\n/g, '\n')
-            : message;
-        
-        io.to(room).emit('user-chat', { name, message: formattedMessage });
+        try {
+            if (!name || !room || !message) {
+                console.error('Invalid message data:', { name, room, message });
+                return;
+            }
+            
+            const isCode = message.includes('```');
+            const formattedMessage = isCode 
+                ? message.replace(/\r\n/g, '\n')
+                : message;
+            
+            io.to(room).emit('user-chat', { name, message: formattedMessage });
+        } catch (error) {
+            console.error('Error sending message:', error);
+        }
     });
     
     // Xử lý file được chia sẻ
     socket.on('file-share', ({ name, room, fileInfo }) => {
-        io.to(room).emit('file-shared', { name, fileInfo });
+        try {
+            io.to(room).emit('file-shared', { name, fileInfo });
+        } catch (error) {
+            console.error('Error sharing file:', error);
+        }
+    });
+
+    socket.on('disconnect', (reason) => {
+        console.log('User disconnected:', socket.id, 'Reason:', reason);
+    });
+
+    socket.on('error', (error) => {
+        console.error('Socket error:', error);
     });
 });
 
