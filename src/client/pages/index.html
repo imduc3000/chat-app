@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chia Sẻ Code :: Đăng Nhập</title>
+    <!-- Using a common monospace font from Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #000000;
+            --cyan: #00FFFF; /* Electric Cyan Accent */
+            --magenta-glitch: #FF00FF;
+            --font-family: 'Fira Code', 'Courier New', Courier, monospace;
+        }
+
+        /* --- Base Setup & Glitch Overlay --- */
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--black);
+            color: var(--cyan);
+            font-family: var(--font-family);
+            font-size: 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden; /* Prevents scrollbars from glitch effects */
+            position: relative;
+        }
+
+        /* Subtle grid and scanline effect overlay */
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(0deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 50px 50px, 50px 50px;
+            pointer-events: none;
+            z-index: 1;
+            animation: static-flicker 0.15s infinite linear;
+        }
+
+        /* CRT scanline animation */
+        body::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 200%; /* Taller to allow for scrolling effect */
+            background: linear-gradient(to bottom, rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+            background-size: 100% 4px;
+            animation: scanline 8s linear infinite;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* --- Animations --- */
+        @keyframes scanline {
+            from { transform: translateY(0); }
+            to { transform: translateY(-20px); }
+        }
+
+        @keyframes static-flicker {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 0.9; }
+        }
+
+        @keyframes blinking-cursor {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        @keyframes button-glitch {
+            0% {
+                transform: translate(0, 0);
+                text-shadow: none;
+            }
+            10% {
+                transform: translate(-1px, 1px);
+                text-shadow: 1px 0px var(--magenta-glitch);
+            }
+            20% {
+                transform: translate(1px, -1px);
+                text-shadow: -1px 0px var(--cyan);
+            }
+            30% {
+                transform: translate(0, 0);
+                text-shadow: none;
+            }
+        }
+
+        /* --- Main Content Styling --- */
+        .terminal-window {
+            position: relative;
+            z-index: 5;
+            padding: 2rem;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .prompt-output {
+            white-space: pre-wrap;
+            margin-bottom: 2rem;
+            line-height: 1.5;
+        }
+
+        .prompt-output span {
+            color: var(--cyan);
+        }
+        
+        /* --- Form Elements --- */
+        .input-line {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            position: relative; /* For cursor positioning */
+        }
+        
+        .input-line label {
+            margin-right: 0.5rem;
+            white-space: nowrap;
+        }
+
+        .input-line input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--cyan);
+            font-family: inherit;
+            font-size: 1rem;
+            width: 100%;
+            caret-color: transparent; /* Hide default caret */
+        }
+        
+        /* Mirror element should match input exactly */
+        .input-mirror {
+            position: absolute;
+            visibility: hidden;
+            white-space: pre;
+            font-family: inherit;
+            font-size: 1rem;
+            pointer-events: none;
+        }
+        
+        /* Blinking block cursor */
+        .input-line .cursor {
+            display: none; /* Hidden by default */
+            width: 10px;
+            height: 1.2rem;
+            background-color: var(--cyan);
+            animation: blinking-cursor 1s step-end infinite;
+            position: absolute;
+            top: 2px;
+            z-index: 10;
+        }
+
+        .input-line input:focus + .cursor {
+            display: inline-block; /* Show when input is focused */
+        }
+
+        /* --- Action Button --- */
+        .action-button {
+            background: transparent;
+            border: 1px solid var(--cyan);
+            color: var(--cyan);
+            padding: 0.75rem 1.5rem;
+            font-family: inherit;
+            font-size: 1rem;
+            cursor: pointer;
+            outline: none;
+            margin-top: 1rem;
+            transition: background-color 0.1s ease, color 0.1s ease;
+        }
+
+        .action-button:hover,
+        .action-button:focus {
+            background-color: var(--cyan);
+            color: var(--black);
+            animation: button-glitch 200ms linear 3;
+        }
+
+        .action-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+    <main class="terminal-window">
+        <!-- Application Title as simulated command output -->
+        <div class="prompt-output">
+            <span>$ ./chiase-code --khoi-tao</span><br>
+            <span>&gt; [Chia Sẻ Code v1.0.0 Đã Sẵn Sàng]</span>
+        </div>
+
+        <!-- Login Form -->
+        <form id="login-form">
+            <!-- Room Code Input -->
+            <div class="input-line">
+                <label for="room-code">Nhập Mã Phòng:</label>
+                <div style="position: relative; display: flex; align-items: center; width: 100%;">
+                    <span class="input-mirror" style="visibility: hidden; white-space: pre;"></span>
+                    <input type="text" id="room-code" name="room-code" autocomplete="off" spellcheck="false" autofocus required>
+                    <div class="cursor"></div>
+                </div>
+            </div>
+
+            <!-- Username Input -->
+            <div class="input-line">
+                <label for="username">Nhập Tên Người Dùng:</label>
+                <div style="position: relative; display: flex; align-items: center; width: 100%;">
+                    <span class="input-mirror" style="visibility: hidden; white-space: pre;"></span>
+                    <input type="text" id="username" name="username" autocomplete="off" spellcheck="false" required>
+                    <div class="cursor"></div>
+                </div>
+            </div>
+
+            <!-- Action Button as 'Execute' command -->
+            <button type="submit" class="action-button" id="join-button">[THỰC HIỆN: THAM GIA PHÒNG]</button>
+        </form>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('login-form');
+            const inputs = document.querySelectorAll('.input-line input');
+            const joinButton = document.getElementById('join-button');
+
+            // This function simulates a blinking block cursor that follows the text.
+            inputs.forEach(input => {
+                const parent = input.parentElement;
+                const mirror = parent.querySelector('.input-mirror');
+                const cursor = parent.querySelector('.cursor');
+                const label = parent.parentElement.querySelector('label');
+
+                // Function to update cursor position
+                const updateCursor = () => {
+                    // Create a temporary span to measure text width more accurately
+                    const tempSpan = document.createElement('span');
+                    tempSpan.style.visibility = 'hidden';
+                    tempSpan.style.position = 'absolute';
+                    tempSpan.style.whiteSpace = 'pre';
+                    tempSpan.style.font = window.getComputedStyle(input).font;
+                    tempSpan.textContent = input.value;
+                    
+                    document.body.appendChild(tempSpan);
+                    const textWidth = tempSpan.offsetWidth;
+                    document.body.removeChild(tempSpan);
+                    
+                    // Get the exact position of the label end
+                    const labelRect = label.getBoundingClientRect();
+                    const inputRect = input.getBoundingClientRect();
+                    const parentRect = parent.getBoundingClientRect();
+                    
+                    // Calculate cursor position relative to parent
+                    const labelEndX = labelRect.right - parentRect.left;
+                    const cursorLeft = labelEndX + textWidth + 8; // 8px for spacing
+                    
+                    cursor.style.left = cursorLeft + 'px';
+                };
+
+                input.addEventListener('input', updateCursor);
+                input.addEventListener('focus', updateCursor);
+                input.addEventListener('click', updateCursor);
+                input.addEventListener('keyup', updateCursor);
+
+                // Initial position update
+                setTimeout(updateCursor, 100);
+            });
+
+            // Handle form submission - connect to chat app
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const roomCode = document.getElementById('room-code').value.trim();
+                const username = document.getElementById('username').value.trim();
+                
+                if (!roomCode || !username) {
+                    return;
+                }
+
+                console.log(`[THỰC HIỆN] Đang cố gắng tham gia phòng: ${roomCode} với tên: ${username}`);
+                
+                // Disable button and show loading state
+                joinButton.disabled = true;
+                joinButton.textContent = '[ĐANG KẾT NỐI...]';
+                
+                // Store user data in localStorage
+                localStorage.setItem('chat_username', username);
+                localStorage.setItem('chat_room', roomCode);
+                
+                // Navigate to chat page
+                setTimeout(() => {
+                    window.location.href = '/chat';
+                }, 1000); // Small delay for UX effect
+            });
+
+            // Load previous values if they exist
+            const savedUsername = localStorage.getItem('chat_username');
+            const savedRoom = localStorage.getItem('chat_room');
+            
+            if (savedRoom) {
+                document.getElementById('room-code').value = savedRoom;
+            }
+            if (savedUsername) {
+                document.getElementById('username').value = savedUsername;
+            }
+
+            // Update cursor positions for pre-filled values
+            setTimeout(() => {
+                inputs.forEach(input => {
+                    const parent = input.parentElement;
+                    const cursor = parent.querySelector('.cursor');
+                    const label = parent.parentElement.querySelector('label');
+
+                    const updateCursor = () => {
+                        // Create temporary span for accurate measurement
+                        const tempSpan = document.createElement('span');
+                        tempSpan.style.visibility = 'hidden';
+                        tempSpan.style.position = 'absolute';
+                        tempSpan.style.whiteSpace = 'pre';
+                        tempSpan.style.font = window.getComputedStyle(input).font;
+                        tempSpan.textContent = input.value;
+                        
+                        document.body.appendChild(tempSpan);
+                        const textWidth = tempSpan.offsetWidth;
+                        document.body.removeChild(tempSpan);
+                        
+                        // Calculate position using getBoundingClientRect for accuracy
+                        const labelRect = label.getBoundingClientRect();
+                        const parentRect = parent.getBoundingClientRect();
+                        const labelEndX = labelRect.right - parentRect.left;
+                        const cursorLeft = labelEndX + textWidth + 8;
+                        
+                        cursor.style.left = cursorLeft + 'px';
+                    };
+                    
+                    updateCursor(); // Update for pre-filled values
+                });
+            }, 200); // Delay to ensure everything is loaded
+        });
+    </script>
+</body>
+</html>

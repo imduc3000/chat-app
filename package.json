@@ -1,10 +1,29 @@
 {
-  "name": "chat-app",
-  "version": "1.0.0",
-  "main": "index.js",
+  "name": "chat-app-professional",
+  "version": "2.0.0",
+  "description": "A professional real-time chat application with file sharing, code highlighting, Messenger-style UI, reply features, and Vietnamese localization",
+  "main": "src/server/index.js",
   "license": "MIT",
+  "author": "Duc",
+  "keywords": [
+    "chat", 
+    "realtime", 
+    "websocket", 
+    "socket.io", 
+    "express", 
+    "file-sharing",
+    "code-highlighting",
+    "messenger",
+    "reply-feature",
+    "vietnamese",
+    "professional"
+  ],
   "scripts": {
-    "start": "node index.js"
+    "start": "node src/server/index.js",
+    "dev": "nodemon src/server/index.js",
+    "test": "echo \"No tests configured\" && exit 0",
+    "clean": "rm -rf uploads/* && echo 'Uploads directory cleaned'",
+    "lint": "echo 'Linting not configured yet'"
   },
   "dependencies": {
     "express": "^4.21.2",
@@ -13,5 +32,17 @@
   },
   "devDependencies": {
     "nodemon": "^3.1.9"
-  }
+  },
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/chat-app-professional.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/chat-app-professional/issues"
+  },
+  "homepage": "https://github.com/yourusername/chat-app-professional#readme"
 }

@@ -1,0 +1,1934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phòng Chat - Chia Sẻ Code</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <!-- Load core dependencies first -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup-templating.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-clike.min.js"></script>
+    <!-- Then load individual languages -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-html.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-sql.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-php.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
+    <script>
+        // Initialize Prism when page loads and ensure all components are loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, Prism available:', !!window.Prism);
+            console.log('Available Prism languages:', Object.keys(window.Prism?.languages || {}));
+            
+            // Function to check if all language components are loaded
+            function checkPrismLanguages() {
+                const expectedLanguages = ['javascript', 'python', 'java', 'c', 'cpp', 'markup', 'css', 'sql', 'php', 'json'];
+                const availableLanguages = Object.keys(window.Prism?.languages || {});
+                
+                console.log('Expected languages:', expectedLanguages);
+                console.log('Available languages:', availableLanguages);
+                
+                const missing = expectedLanguages.filter(lang => !availableLanguages.includes(lang));
+                if (missing.length > 0) {
+                    console.warn('Missing Prism languages:', missing);
+                } else {
+                    console.log('All expected Prism languages are available');
+                }
+                
+                // Test each language
+                expectedLanguages.forEach(lang => {
+                    if (window.Prism?.languages?.[lang]) {
+                        console.log(`✓ ${lang} language is available`);
+                    } else {
+                        console.error(`✗ ${lang} language is NOT available`);
+                    }
+                });
+            }
+            
+            // Wait for all language components to load
+            setTimeout(() => {
+                checkPrismLanguages();
+                
+                if (window.Prism) {
+                    console.log('Prism languages after timeout:', Object.keys(window.Prism.languages));
+                    Prism.highlightAll();
+                }
+            }, 1000);
+        });
+    </script>
+    <style>
+        /* CLI Terminal styling */
+        body {
+            font-family: 'Fira Code', monospace !important;
+            background-color: #0d1117;
+            color: #c9d1d9;
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Subtle CRT scanline effect */
+        body::after {
+            content: " ";
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(to bottom, rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+            background-size: 100% 4px;
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 0.2;
+            animation: flicker 0.15s infinite;
+        }
+        
+        /* Subtle flicker animation */
+        @keyframes flicker {
+          0% { opacity: 0.2; }
+          20% { opacity: 0.25; }
+          40% { opacity: 0.2; }
+          60% { opacity: 0.3; }
+          80% { opacity: 0.2; }
+          100% { opacity: 0.2; }
+        }
+
+        /* Custom scrollbar to match the theme */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0d1117;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2a313c;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #3a4250;
+        }
+        
+        /* Remove default input styling */
+        input:focus, textarea:focus, select:focus{
+            outline: none;
+        }
+
+        /* Ensure sharp corners everywhere */
+        * {
+            border-radius: 0 !important;
+        }
+
+        /* Override toast notifications for CLI theme */
+        .toast-container {
+            font-family: 'Fira Code', monospace;
+        }
+
+        .toast {
+            background: #161b22 !important;
+            border: 1px solid #30363d !important;
+            border-radius: 0 !important;
+            color: #c9d1d9 !important;
+        }
+    </style>
+    </style>
+</head>
+<body class="overflow-hidden">
+    <div id="app" class="flex h-screen w-screen text-sm">
+        <!-- Left Panel: Room Info -->
+        <aside class="bg-[#161b22] border-r border-gray-800 w-64 flex-shrink-0 flex flex-col">
+            <header class="p-4 border-b border-gray-800 font-bold text-green-400">
+                [MÁY CHỦ CHAT]
+            </header>
+            <div class="flex-1 p-4">
+                <div class="space-y-4">
+                    <div>
+                        <div class="text-xs text-gray-500 mb-2">PHÒNG HIỆN TẠI</div>
+                        <div class="text-green-400 font-mono"># <span id="current-room"></span></div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-gray-500 mb-2">ĐIỀU KHIỂN</div>
+                        <div class="space-y-2">
+                            <button id="notification-btn" class="w-full text-left px-2 py-1 bg-gray-800 text-gray-300 hover:bg-gray-700 transition-colors" title="Bật/Tắt Thông Báo">
+                                <span class="text-blue-400">[THÔNG BÁO]</span> <span id="notif-status">BẬT</span>
+                            </button>
+                            <button id="mute-btn" class="w-full text-left px-2 py-1 bg-gray-800 text-gray-300 hover:bg-gray-700 transition-colors" title="Tắt/Bật Tất Cả Thông Báo">
+                                <span class="text-yellow-400">[IM LẶNG]</span> <span id="mute-status">TẮT</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <footer class="p-4 border-t border-gray-800 flex items-center space-x-3">
+                 <div class="h-8 w-8 flex items-center justify-center bg-gray-700 text-green-400 font-mono text-xs" id="user-avatar"></div>
+                 <div>
+                     <p class="font-bold" id="current-user"></p>
+                     <p class="text-xs text-gray-500"># online</p>
+                 </div>
+                 <div id="notification-status" class="ml-auto">
+                    <span id="unread-badge" class="bg-red-500 text-white px-2 py-1 text-xs font-mono" style="display: none;">0</span>
+                </div>
+            </footer>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 flex flex-col bg-[#0d1117]">
+            <!-- Header for the chat -->
+            <header class="p-4 border-b border-gray-800 flex justify-between items-center flex-shrink-0">
+                <div>
+                    <h1 id="chat-title" class="font-bold text-lg text-green-400"># <span id="room-code"></span></h1>
+                    <p class="text-xs text-gray-500">Real-time code sharing and collaboration chat</p>
+                </div>
+                <div class="text-gray-500 font-mono">
+                   MEMBERS: <span id="member-count">0</span>
+                </div>
+            </header>
+
+            <div class="flex-1 flex overflow-hidden">
+                <!-- Chat Messages -->
+                <section class="flex-1 flex flex-col relative">
+                    <!-- Scroll to bottom button -->
+                    <button id="scroll-to-bottom" class="absolute bottom-20 right-4 bg-blue-600/80 hover:bg-blue-600 text-white p-2 rounded-full shadow-lg transition-all z-40 hidden" title="Cuộn xuống dưới">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                    </button>
+                    
+                    <div id="message-container" class="flex-1 p-4 overflow-y-auto space-y-4">
+                        <ul id="messages" class="space-y-4"></ul>
+                    </div>
+
+                    <!-- File Preview Card (appears above input when file is selected) -->
+                    <div id="file-preview-card" class="mx-4 mb-2 p-3 bg-[#161b22] border border-gray-800 cursor-pointer hover:bg-[#21262d]" style="display: none;">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="text-blue-400 font-mono">[TỆP TIN]</div>
+                                <div>
+                                    <div id="preview-filename" class="text-gray-300 font-mono text-sm"></div>
+                                    <div id="preview-filesize" class="text-gray-500 text-xs"></div>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-xs text-yellow-400 font-mono">CLICK VÀO ĐÂY RỒI NHẤN</span>
+                                <kbd class="px-2 py-1 bg-gray-800 text-green-400 text-xs">ENTER</kbd>
+                                <span class="text-xs text-gray-500">để gửi</span>
+                                <button id="cancel-file" class="ml-2 text-red-400 hover:text-red-300">✕</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reply Preview Card (appears above input when replying) -->
+                    <div id="reply-preview-card" class="mx-4 mb-2 p-3 bg-[#161b22] border border-gray-800" style="display: none;">
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-1">
+                                    <div class="text-purple-400 font-mono text-sm">[TRẢ LỜI]</div>
+                                    <div id="reply-username" class="text-green-400 font-bold text-sm"></div>
+                                </div>
+                                <div id="reply-message" class="text-gray-300 text-sm bg-gray-800 p-2 rounded border-l-2 border-purple-400 max-h-16 overflow-y-auto"></div>
+                            </div>
+                            <button id="cancel-reply" class="ml-3 text-red-400 hover:text-red-300">✕</button>
+                        </div>
+                    </div>
+
+                    <!-- Input Area -->
+                    <div id="input-area" class="p-4 border-t border-gray-800">
+                        <form id="chat-form" class="flex items-center space-x-2">
+                            <input type="file" id="file-upload" style="display: none;">
+                            <label for="file-upload" class="text-cyan-400 hover:text-cyan-300 cursor-pointer font-mono">[FILE]</label>
+                            <span class="text-green-400 font-bold font-mono">&gt;</span>
+                            <div class="flex-1 relative">
+                                <textarea id="chat-mes" class="bg-transparent w-full focus:outline-none font-mono text-gray-300 resize-none overflow-y-auto max-h-32 min-h-[24px] leading-6" placeholder="Enter message... (Enter to send, Shift+Enter for new line, @ to mention)" rows="1"></textarea>
+                                <div id="mention-dropdown" class="absolute bottom-full left-0 right-0 bg-[#161b22] border border-gray-800 max-h-32 overflow-y-auto" style="display: none;"></div>
+                            </div>
+                            <button id="send-chat" type="submit" class="text-green-400 hover:text-green-300 font-mono">[SEND]</button>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- Right Panel: Members List -->
+                <aside class="w-56 bg-[#161b22] border-l border-gray-800 flex-shrink-0 flex flex-col">
+                    <h2 class="p-4 border-b border-gray-800 font-bold text-blue-400 font-mono">[MEMBERS]</h2>
+                    <ul id="members-container" class="flex-1 overflow-y-auto p-4 space-y-3">
+                       <!-- Member items will be injected by JS -->
+                    </ul>
+                </aside>
+            </div>
+        </main>
+
+        <!-- Drag and Drop Overlay -->
+        <div id="drag-overlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center" style="display: none; z-index: 1000;">
+            <div class="bg-[#161b22] border border-gray-800 p-8 text-center">
+                <div class="text-6xl text-cyan-400 mb-4">📎</div>
+                <div class="text-xl font-mono text-gray-300 mb-2">DROP FILE TO UPLOAD</div>
+                <div class="text-sm text-gray-500 font-mono">Release to upload instantly</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast notifications container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        // Global variables and state
+        const name = localStorage.getItem('chat_username');
+        const room = localStorage.getItem('chat_room');
+        let roomMembers = [];
+        let isNotificationEnabled = localStorage.getItem('notifications_enabled') !== 'false';
+        let isMutedAll = localStorage.getItem('muted_all') === 'true';
+        let mentionDropdownVisible = false;
+        let unreadCount = 0;
+        let originalTitle = document.title;
+        let titleBlinkInterval = null;
+        
+        // Initialize scroll button
+        document.addEventListener('DOMContentLoaded', function() {
+            const scrollButton = document.getElementById('scroll-to-bottom');
+            const messageContainer = document.getElementById('message-container');
+            
+            // Handle scroll to bottom button
+            scrollButton.addEventListener('click', () => {
+                messageContainer.scrollTop = messageContainer.scrollHeight;
+                scrollButton.classList.add('hidden');
+            });
+            
+            // Show/hide scroll button based on scroll position
+            messageContainer.addEventListener('scroll', () => {
+                const scrollThreshold = 100;
+                const isNearBottom = messageContainer.scrollTop + messageContainer.clientHeight >= 
+                                   messageContainer.scrollHeight - scrollThreshold;
+                
+                if (isNearBottom) {
+                    scrollButton.classList.add('hidden');
+                } else {
+                    scrollButton.classList.remove('hidden');
+                }
+            });
+        });
+        
+        // Check if user is logged in
+        if (!name || !room) {
+            window.location.href = '/';
+        } else {
+            document.getElementById('room-code').textContent = room;
+            document.getElementById('current-room').textContent = room;
+            document.getElementById('current-user').textContent = name;
+            document.getElementById('user-avatar').textContent = name.substring(0, 2).toUpperCase();
+        }
+
+        const socket = io();
+        
+        // DOM elements
+        const chatForm = document.querySelector('#chat-form');
+        const chatMes = document.querySelector('#chat-mes');
+        const messages = document.querySelector('#messages');
+        const fileUpload = document.querySelector('#file-upload');
+        const filePreviewCard = document.querySelector('#file-preview-card');
+        const previewFilename = document.querySelector('#preview-filename');
+        const previewFilesize = document.querySelector('#preview-filesize');
+        const cancelFileBtn = document.querySelector('#cancel-file');
+        const replyPreviewCard = document.querySelector('#reply-preview-card');
+        const replyUsername = document.querySelector('#reply-username');
+        const replyMessage = document.querySelector('#reply-message');
+        const cancelReplyBtn = document.querySelector('#cancel-reply');
+        const dragOverlay = document.querySelector('#drag-overlay');
+        const notificationBtn = document.querySelector('#notification-btn');
+        const muteBtn = document.querySelector('#mute-btn');
+        const membersContainer = document.querySelector('#members-container');
+        const mentionDropdown = document.querySelector('#mention-dropdown');
+        const memberCountEl = document.querySelector('#member-count');
+        const messageContainer = document.querySelector('#message-container');
+
+        // File state
+        let stagedFile = null;
+        let dragCounter = 0;
+        let toastCounter = 0;
+
+        // Reply state
+        let replyingTo = null;
+        let replyPreview = null;
+
+        // =================================================================
+        // TOAST NOTIFICATIONS (IN-APP)
+        // =================================================================
+        
+        function createToast(type, title, message, options = {}) {
+            const toastContainer = document.getElementById('toast-container');
+            const toastId = `toast-${++toastCounter}`;
+            
+            // Icons for different types
+            const icons = {
+                message: '💬',
+                mention: '🔔',
+                file: '📎',
+                system: 'ℹ️',
+                success: '✅',
+                warning: '⚠️',
+                error: '❌'
+            };
+            
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.id = toastId;
+            
+            // Sound effect (optional)
+            if (options.playSound !== false) {
+                playNotificationSound(type);
+            }
+            
+            toast.innerHTML = `
+                <div class="toast-icon">${icons[type] || '🔔'}</div>
+                <div class="toast-content">
+                    <div class="toast-title">${title}</div>
+                    <div class="toast-message">${message}</div>
+                    ${options.showTime ? `<div class="toast-time">${new Date().toLocaleTimeString()}</div>` : ''}
+                </div>
+                <button class="toast-close" onclick="removeToast('${toastId}')">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M18.3 5.71a.996.996 0 0 0-1.41 0L12 10.59 7.11 5.7A.996.996 0 1 0 5.7 7.11L10.59 12 5.7 16.89a.996.996 0 1 0 1.41 1.41L12 13.41l4.89 4.89a.996.996 0 1 0 1.41-1.41L13.41 12l4.89-4.89c.38-.38.38-1.02 0-1.4z"/>
+                    </svg>
+                </button>
+            `;
+            
+            // Add click handler to focus chat when clicked
+            toast.addEventListener('click', (e) => {
+                if (!e.target.classList.contains('toast-close')) {
+                    window.focus();
+                    chatMes.focus();
+                    removeToast(toastId);
+                }
+            });
+            
+            toastContainer.appendChild(toast);
+            
+            // Animate in
+            setTimeout(() => toast.classList.add('toast-show'), 100);
+            
+            // Auto remove after specified time
+            const autoRemoveTime = options.duration || (type === 'mention' ? 8000 : 5000);
+            setTimeout(() => removeToast(toastId), autoRemoveTime);
+            
+            return toastId;
+        }
+        
+        function removeToast(toastId) {
+            const toast = document.getElementById(toastId);
+            if (toast) {
+                toast.classList.remove('toast-show');
+                toast.classList.add('toast-hide');
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.parentNode.removeChild(toast);
+                    }
+                }, 300);
+            }
+        }
+        
+        // Make removeToast global so it can be called from HTML onclick
+        window.removeToast = removeToast;
+        
+        // Enhanced notification sound using Web Audio API
+        function playNotificationSound(type) {
+            if (!isNotificationEnabled) return;
+            
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // Create a more noticeable sound for VS Code users
+                function createTone(frequency, duration, delay = 0) {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    
+                    oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime + delay);
+                    oscillator.type = type === 'mention' ? 'triangle' : 'sine';
+                    
+                    gainNode.gain.setValueAtTime(0, audioContext.currentTime + delay);
+                    gainNode.gain.linearRampToValueAtTime(0.2, audioContext.currentTime + delay + 0.01);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + delay + duration);
+                    
+                    oscillator.start(audioContext.currentTime + delay);
+                    oscillator.stop(audioContext.currentTime + delay + duration);
+                }
+                
+                // Different sound patterns for different notification types
+                if (type === 'mention') {
+                    // Triple beep for mentions - more urgent
+                    createTone(800, 0.15, 0);
+                    createTone(1000, 0.15, 0.2);
+                    createTone(1200, 0.2, 0.4);
+                } else if (type === 'message') {
+                    // Double beep for regular messages
+                    createTone(500, 0.15, 0);
+                    createTone(700, 0.15, 0.25);
+                } else if (type === 'file') {
+                    // Single longer beep for files
+                    createTone(600, 0.3, 0);
+                }
+                
+            } catch (error) {
+                console.log('Audio notification not supported:', error);
+                // Fallback: Try to play a simple beep
+                try {
+                    const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmYcByeJ1O/TfzAGJHbH8N2QQAoUXrTp66hVFApGn+DyvmYcByeJ1O/TfzAGJHbH8N2QQAoUXrTp66hVFApGn+DyvmYcByeJ1O/TfzAGJHbH8N2QQAoUXrTp66hVFApGn+DyvmYcByeJ1O/TfzAG');
+                    audio.volume = 0.1;
+                    audio.play().catch(() => {}); // Silent fail
+                } catch (e) {
+                    // Ultimate fallback - do nothing
+                }
+            }
+        }
+
+        // =================================================================
+        // BROWSER WINDOW MANIPULATION (Attention-grabbing)
+        // =================================================================
+        
+        function grabAttention(type) {
+            // Only do this for mentions or if page is not visible
+            if (type !== 'mention' && document.visibilityState === 'visible') return;
+            
+            // Blur and focus to create a "flash" effect (works in some browsers)
+            if (window.blur && window.focus) {
+                try {
+                    window.blur();
+                    setTimeout(() => window.focus(), 100);
+                } catch (e) {
+                    // Silent fail - some browsers block this
+                }
+            }
+            
+            // Scroll to top to create visual movement
+            const currentScroll = window.scrollY;
+            window.scrollTo(0, 0);
+            setTimeout(() => window.scrollTo(0, currentScroll), 100);
+        }
+        
+        function updateTabNotification(increment = true) {
+            if (increment) {
+                unreadCount++;
+            }
+            
+            if (unreadCount > 0) {
+                document.title = `(${unreadCount}) ${originalTitle}`;
+                
+                // Update visual badge
+                const badge = document.getElementById('unread-badge');
+                badge.textContent = unreadCount;
+                badge.style.display = 'inline-block';
+                
+                // Start blinking title for mentions
+                if (!titleBlinkInterval) {
+                    let isOriginal = true;
+                    titleBlinkInterval = setInterval(() => {
+                        document.title = isOriginal ? `🔔 New Messages!` : `(${unreadCount}) ${originalTitle}`;
+                        isOriginal = !isOriginal;
+                    }, 1000);
+                }
+                
+                // Change favicon to show notification
+                changeFavicon('🔔');
+            }
+        }
+        
+        function clearTabNotification() {
+            unreadCount = 0;
+            document.title = originalTitle;
+            
+            // Hide visual badge
+            const badge = document.getElementById('unread-badge');
+            badge.style.display = 'none';
+            
+            if (titleBlinkInterval) {
+                clearInterval(titleBlinkInterval);
+                titleBlinkInterval = null;
+            }
+            
+            // Reset favicon
+            changeFavicon('💬');
+        }
+        
+        function changeFavicon(emoji) {
+            // Create canvas to draw emoji favicon
+            const canvas = document.createElement('canvas');
+            canvas.width = 32;
+            canvas.height = 32;
+            const ctx = canvas.getContext('2d');
+            
+            // Draw background
+            ctx.fillStyle = '#7fff00';
+            ctx.fillRect(0, 0, 32, 32);
+            
+            // Draw emoji
+            ctx.font = '20px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(emoji, 16, 16);
+            
+            // Update favicon
+            const link = document.querySelector("link[rel*='icon']") || document.createElement('link');
+            link.type = 'image/x-icon';
+            link.rel = 'shortcut icon';
+            link.href = canvas.toDataURL();
+            document.getElementsByTagName('head')[0].appendChild(link);
+        }
+        
+        // Clear notifications when user focuses back to tab
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                setTimeout(clearTabNotification, 1000);
+            }
+        });
+        
+        window.addEventListener('focus', () => {
+            setTimeout(clearTabNotification, 1000);
+        });
+        
+        // Keyboard shortcuts for quick access
+        document.addEventListener('keydown', (e) => {
+            // Ctrl/Cmd + Shift + C to focus chat input quickly
+            if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'C') {
+                e.preventDefault();
+                chatMes.focus();
+                clearTabNotification();
+            }
+            
+            // Esc to clear notifications manually
+            if (e.key === 'Escape') {
+                clearTabNotification();
+            }
+        });
+
+        // =================================================================
+        // PUSH NOTIFICATIONS (Keep existing for desktop notifications)
+        // =================================================================
+        
+        // Request notification permission
+        async function requestNotificationPermission() {
+            if (!('Notification' in window)) {
+                console.log('Browser does not support notifications');
+                return false;
+            }
+            
+            const permission = await Notification.requestPermission();
+            return permission === 'granted';
+        }
+
+        // Show push notification
+        function showNotification(title, options = {}) {
+            // Always show desktop notification when not focused on tab
+            const shouldShowDesktop = document.visibilityState === 'hidden' || !document.hasFocus();
+            
+            if (shouldShowDesktop && 'Notification' in window && Notification.permission === 'granted') {
+                const notification = new Notification(title, {
+                    icon: '/favicon.ico',
+                    badge: '/favicon.ico',
+                    requireInteraction: true, // Keep notification until user interacts
+                    silent: false, // Allow sound
+                    ...options
+                });
+                
+                // Auto close after 10 seconds for desktop notifications
+                setTimeout(() => notification.close(), 10000);
+                
+                // Focus window when clicked
+                notification.onclick = () => {
+                    window.parent.focus();
+                    window.focus();
+                    document.body.focus();
+                    chatMes.focus();
+                    notification.close();
+                };
+            }
+        }
+
+        // =================================================================
+        // UI UPDATE FUNCTIONS
+        // =================================================================
+        
+        function updateNotificationButton() {
+            const statusEl = document.getElementById('notif-status');
+            statusEl.textContent = isNotificationEnabled ? 'ON' : 'OFF';
+            notificationBtn.className = `w-full text-left px-2 py-1 transition-colors ${
+                isNotificationEnabled 
+                    ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+            }`;
+        }
+        
+        function updateMuteButton() {
+            const statusEl = document.getElementById('mute-status');
+            statusEl.textContent = isMutedAll ? 'ON' : 'OFF';
+            muteBtn.className = `w-full text-left px-2 py-1 transition-colors ${
+                isMutedAll 
+                    ? 'bg-yellow-600 text-white hover:bg-yellow-700' 
+                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+            }`;
+        }
+
+        // =================================================================
+        // MEMBER TAGGING
+        // =================================================================
+        
+        // Update members list display
+        function updateMembersDisplay() {
+            const memberCountEl = document.querySelector('#member-count');
+            
+            if (roomMembers.length === 0) {
+                membersContainer.innerHTML = '<li class="text-gray-500 font-mono">No members online</li>';
+                memberCountEl.textContent = '(0)';
+            } else {
+                const membersList = roomMembers.map(member => `
+                    <li class="flex items-center space-x-2 py-1 hover:bg-gray-800 px-2 cursor-pointer font-mono"
+                         onclick="mentionUser('${member}')">
+                        <div class="w-5 h-5 rounded bg-blue-500 flex items-center justify-center text-white text-xs font-bold">
+                            ${member.charAt(0).toUpperCase()}
+                        </div>
+                        <div class="flex-1">
+                            <span class="text-green-400">${member}</span>
+                            ${member === name ? '<span class="text-yellow-400 text-xs ml-1">(You)</span>' : ''}
+                        </div>
+                        ${member !== name ? '<div class="w-2 h-2 bg-green-400 rounded-full"></div>' : ''}
+                    </li>
+                `).join('');
+                membersContainer.innerHTML = membersList;
+                memberCountEl.textContent = `(${roomMembers.length})`;
+            }
+        }
+
+        // Show mention dropdown
+        function showMentionDropdown(query = '') {
+            const filteredMembers = roomMembers.filter(member => 
+                member !== name && member.toLowerCase().includes(query.toLowerCase())
+            );
+            
+            if (filteredMembers.length === 0) {
+                mentionDropdown.style.display = 'none';
+                mentionDropdownVisible = false;
+                return;
+            }
+            
+            mentionDropdown.innerHTML = filteredMembers.map(member => 
+                `<div class="mention-item" data-member="${member}">@${member}</div>`
+            ).join('');
+            
+            mentionDropdown.style.display = 'block';
+            mentionDropdownVisible = true;
+        }
+
+        // Hide mention dropdown
+        function hideMentionDropdown() {
+            mentionDropdown.style.display = 'none';
+            mentionDropdownVisible = false;
+        }
+
+        // Mention a user directly
+        function mentionUser(username) {
+            const currentText = chatMes.value;
+            const mention = currentText ? `${currentText} @${username} ` : `@${username} `;
+            chatMes.value = mention;
+            chatMes.focus();
+            chatMes.setSelectionRange(mention.length, mention.length);
+        }
+        
+        // Handle mention dropdown clicks
+        mentionDropdown.addEventListener('click', (e) => {
+            if (e.target.classList.contains('mention-item')) {
+                const member = e.target.dataset.member;
+                const cursorPos = chatMes.selectionStart;
+                const text = chatMes.value;
+                const beforeCursor = text.substring(0, cursorPos);
+                const afterCursor = text.substring(cursorPos);
+                
+                // Find the @ symbol position
+                const atIndex = beforeCursor.lastIndexOf('@');
+                if (atIndex !== -1) {
+                    const newText = text.substring(0, atIndex) + `@${member} ` + afterCursor;
+                    chatMes.value = newText;
+                    chatMes.setSelectionRange(atIndex + member.length + 2, atIndex + member.length + 2);
+                }
+                
+                hideMentionDropdown();
+                chatMes.focus();
+            }
+        });
+
+        // Handle @ typing for mentions
+        chatMes.addEventListener('input', () => {
+            const cursorPos = chatMes.selectionStart;
+            const text = chatMes.value;
+            const beforeCursor = text.substring(0, cursorPos);
+            
+            // Check if we're typing after an @ symbol
+            const atIndex = beforeCursor.lastIndexOf('@');
+            if (atIndex !== -1) {
+                const afterAt = beforeCursor.substring(atIndex + 1);
+                if (afterAt.length >= 0 && !afterAt.includes(' ')) {
+                    showMentionDropdown(afterAt);
+                    return;
+                }
+            }
+            
+            hideMentionDropdown();
+        });
+
+        // Handle arrow keys in mention dropdown
+        chatMes.addEventListener('keydown', (e) => {
+            if (!mentionDropdownVisible) return;
+            
+            if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                e.preventDefault();
+                const items = mentionDropdown.querySelectorAll('.mention-item');
+                const selected = mentionDropdown.querySelector('.mention-item.selected');
+                
+                if (selected) {
+                    selected.classList.remove('selected');
+                    const index = Array.from(items).indexOf(selected);
+                    const newIndex = e.key === 'ArrowDown' ? 
+                        Math.min(index + 1, items.length - 1) : 
+                        Math.max(index - 1, 0);
+                    items[newIndex].classList.add('selected');
+                } else if (items.length > 0) {
+                    items[0].classList.add('selected');
+                }
+            } else if (e.key === 'Enter' || e.key === 'Tab') {
+                e.preventDefault();
+                const selected = mentionDropdown.querySelector('.mention-item.selected');
+                if (selected) {
+                    selected.click();
+                }
+            } else if (e.key === 'Escape') {
+                hideMentionDropdown();
+            }
+        });
+
+        // Hide dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!mentionDropdown.contains(e.target) && e.target !== chatMes) {
+                hideMentionDropdown();
+            }
+        });
+
+        // =================================================================
+        // REPLY FUNCTIONALITY
+        // =================================================================
+        
+        // Handle reply button clicks
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('reply-btn')) {
+                const messageData = JSON.parse(e.target.dataset.message);
+                startReply(messageData);
+            }
+        });
+
+        // Cancel reply button
+        cancelReplyBtn.addEventListener('click', () => {
+            cancelReply();
+        });
+
+        // Function to start replying to a message
+        function startReply(messageData) {
+            replyingTo = messageData;
+            
+            // Show reply preview
+            replyUsername.textContent = messageData.name;
+            replyMessage.textContent = messageData.message.length > 100 ? 
+                messageData.message.substring(0, 100) + '...' : messageData.message;
+            replyPreviewCard.style.display = 'block';
+            
+            // Auto-mention the user
+            const currentText = chatMes.value.trim();
+            const mention = `@${messageData.name} `;
+            
+            if (!currentText.includes(`@${messageData.name}`)) {
+                chatMes.value = currentText ? `${mention}${currentText}` : mention;
+            }
+            
+            chatMes.focus();
+            chatMes.setSelectionRange(chatMes.value.length, chatMes.value.length);
+        }
+
+        // Function to cancel reply
+        function cancelReply() {
+            replyingTo = null;
+            replyPreviewCard.style.display = 'none';
+            
+            // Remove auto-mention if the input only contains the mention
+            const currentText = chatMes.value.trim();
+            if (replyingTo && currentText === `@${replyingTo.name} `) {
+                chatMes.value = '';
+            }
+            
+            chatMes.focus();
+        }
+
+        // =================================================================
+        // SOCKET EVENT HANDLERS
+        // =================================================================
+        
+        socket.on('connect', () => {
+            console.log('Connected to server');
+            socket.emit('join-room', { name, room });
+            
+            // Show welcome toast
+            setTimeout(() => {
+                createToast('success', 'Connected to chat!', 
+                    `Welcome ${name}! Toast notifications are now active.`, {
+                    showTime: true,
+                    duration: 4000
+                });
+            }, 500);
+        });
+
+        socket.on('room-members', (members) => {
+            roomMembers = members;
+            updateMembersDisplay();
+        });
+        
+        // Toast for user join/leave events
+        socket.on('user-chat', (message) => {
+            // Check if it's a system message (join/leave)
+            if (message.name === 'System') {
+                if (message.message.includes('joined the room') || message.message.includes('left the room')) {
+                    const isJoin = message.message.includes('joined');
+                    createToast('system', 
+                        isJoin ? 'User Joined' : 'User Left', 
+                        message.message, {
+                        duration: 3000,
+                        playSound: false  // Don't play sound for system messages
+                    });
+                }
+                
+                // Still display the system message in chat
+                displayMessage(message, false);
+                return;
+            }
+            
+            // Handle regular user messages (existing logic)
+            const isFromSelf = message.name === name;
+            const isMentioned = message.mentions && message.mentions.includes(name);
+            const isHistorical = message.isHistorical; // New flag for historical messages
+            
+            // Show notifications for messages (except from self or historical)
+            if (!isFromSelf && !isHistorical) {
+                if (isMentioned) {
+                    // URGENT: Always show all notifications for mentions
+                    createToast('mention', `${message.name} mentioned you`, 
+                        message.message.substring(0, 80) + (message.message.length > 80 ? '...' : ''), {
+                        showTime: true,
+                        duration: 8000
+                    });
+                    updateTabNotification();
+                    grabAttention('mention');
+                    
+                    // Desktop notification
+                    showNotification(`${message.name} mentioned you`, {
+                        body: message.message.substring(0, 100),
+                        tag: 'mention'
+                    });
+                } else if (!isMutedAll && isNotificationEnabled) {
+                    // Regular messages - show toast only
+                    createToast('message', `New message from ${message.name}`, 
+                        message.message.substring(0, 80) + (message.message.length > 80 ? '...' : ''), {
+                        showTime: true,
+                        duration: 5000
+                    });
+                    updateTabNotification();
+                    
+                    // Desktop notification if not focused
+                    if (document.visibilityState === 'hidden') {
+                        showNotification(`New message from ${message.name}`, {
+                            body: message.message.substring(0, 100),
+                            tag: 'message'
+                        });
+                    }
+                }
+            }
+            
+            displayMessage(message, isMentioned);
+        });
+
+        socket.on('file-shared', ({ name: senderName, fileInfo, isHistorical }) => {
+            // Show notifications for file shares (but not for historical messages)
+            if (!isHistorical && senderName !== name && (!isMutedAll || isNotificationEnabled)) {
+                createToast('file', `${senderName} shared a file`, 
+                    `📎 ${fileInfo.originalname} (${formatFileSize(fileInfo.size)})`, {
+                    showTime: true,
+                    duration: 6000
+                });
+                updateTabNotification();
+                
+                // Desktop notification
+                showNotification(`${senderName} shared a file`, {
+                    body: fileInfo.originalname,
+                    tag: 'file'
+                });
+            }
+            
+            displayFileMessage(senderName, fileInfo);
+        });
+
+        // =================================================================
+        // MESSAGE DISPLAY FUNCTIONS
+        // =================================================================
+        
+        function displayMessage(message, isMentioned = false) {
+            console.log('displayMessage called with:', message);
+            const messageText = message.message.trim();
+            const timestamp = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            const mainContainer = document.getElementById('message-container');
+            
+            // Check for code blocks with ```
+            const codeBlockRegex = /```(\w*)\n?([\s\S]*?)```/g;
+            const codeBlockMatch = codeBlockRegex.exec(messageText);
+            
+            // Check for raw code patterns (functions, console.log, etc.)
+            const codePatterns = {
+                javascript: [
+                    /function\s+\w+\s*\([^)]*\)\s*{/,
+                    /console\.(log|error|warn|info)\s*\(/,
+                    /const\s+\w+\s*=/,
+                    /let\s+\w+\s*=/,
+                    /var\s+\w+\s*=/,
+                    /=>\s*{/,
+                    /import\s+.*from/,
+                    /export\s+(default\s+)?/,
+                    /if\s*\([^)]+\)\s*{/,
+                    /for\s*\([^)]*\)\s*{/,
+                    /while\s*\([^)]+\)\s*{/,
+                    /class\s+\w+/,
+                    /\.then\s*\(/,
+                    /async\s+function/,
+                    /await\s+/
+                ],
+                python: [
+                    /def\s+\w+\s*\([^)]*\):/,
+                    /class\s+\w+.*:/,
+                    /if\s+.*:/,
+                    /for\s+\w+\s+in\s+.*:/,
+                    /while\s+.*:/,
+                    /import\s+\w+/,
+                    /from\s+\w+\s+import/,
+                    /print\s*\(/,
+                    /len\s*\(/,
+                    /range\s*\(/,
+                    /try\s*:/,
+                    /except\s*.*:/,
+                    /with\s+.*:/,
+                    /__init__\s*\(/,
+                    /@\w+/
+                ],
+                java: [
+                    /public\s+class\s+\w+/,
+                    /private\s+\w+\s+\w+/,
+                    /public\s+static\s+void\s+main/,
+                    /System\.out\.(print|println)/,
+                    /public\s+\w+\s+\w+\s*\([^)]*\)\s*{/,
+                    /private\s+\w+\s+\w+\s*\([^)]*\)\s*{/,
+                    /import\s+java\./,
+                    /package\s+\w+/,
+                    /extends\s+\w+/,
+                    /implements\s+\w+/,
+                    /@Override/,
+                    /new\s+\w+\s*\(/
+                ],
+                cpp: [
+                    /#include\s*<.*>/,
+                    /#include\s*".*"/,
+                    /using\s+namespace\s+std/,
+                    /int\s+main\s*\([^)]*\)\s*{/,
+                    /cout\s*<</,
+                    /cin\s*>>/,
+                    /std::/,
+                    /class\s+\w+\s*{/,
+                    /struct\s+\w+\s*{/,
+                    /template\s*</,
+                    /namespace\s+\w+/
+                ],
+                c: [
+                    /#include\s*<.*>/,
+                    /#include\s*".*"/,
+                    /int\s+main\s*\([^)]*\)\s*{/,
+                    /printf\s*\(/,
+                    /scanf\s*\(/,
+                    /malloc\s*\(/,
+                    /free\s*\(/,
+                    /sizeof\s*\(/,
+                    /struct\s+\w+\s*{/,
+                    /typedef\s+/
+                ],
+                html: [
+                    /<html.*>/,
+                    /<head.*>/,
+                    /<body.*>/,
+                    /<div.*>/,
+                    /<p.*>/,
+                    /<a\s+href/,
+                    /<img\s+src/,
+                    /<script.*>/,
+                    /<style.*>/,
+                    /<link.*>/,
+                    /<!DOCTYPE\s+html>/,
+                    /<\/\w+>/
+                ],
+                css: [
+                    /\w+\s*{[^}]*}/,
+                    /\.\w+\s*{/,
+                    /#\w+\s*{/,
+                    /@media\s+/,
+                    /@import\s+/,
+                    /:\s*(hover|focus|active)/,
+                    /background-color\s*:/,
+                    /font-family\s*:/,
+                    /margin\s*:/,
+                    /padding\s*:/,
+                    /border\s*:/,
+                    /display\s*:/
+                ],
+                sql: [
+                    /SELECT\s+.*FROM/i,
+                    /INSERT\s+INTO/i,
+                    /UPDATE\s+.*SET/i,
+                    /DELETE\s+FROM/i,
+                    /CREATE\s+TABLE/i,
+                    /ALTER\s+TABLE/i,
+                    /DROP\s+TABLE/i,
+                    /WHERE\s+/i,
+                    /JOIN\s+/i,
+                    /INNER\s+JOIN/i,
+                    /LEFT\s+JOIN/i,
+                    /ORDER\s+BY/i,
+                    /GROUP\s+BY/i
+                ],
+                php: [
+                    /<\?php/,
+                    /echo\s+/,
+                    /print\s+/,
+                    /\$\w+\s*=/,
+                    /function\s+\w+\s*\(/,
+                    /class\s+\w+/,
+                    /require\s*\(/,
+                    /include\s*\(/,
+                    /foreach\s*\(/,
+                    /if\s*\(/,
+                    /\?>/
+                ],
+                json: [
+                    /^\s*{/,
+                    /^\s*\[/,
+                    /"\w+"\s*:/,
+                    /:\s*".*"/,
+                    /:\s*\d+/,
+                    /:\s*(true|false|null)/
+                ],
+                xml: [
+                    /<\?xml.*\?>/,
+                    /<\w+.*>/,
+                    /<\/\w+>/,
+                    /<\w+\s+\w+\s*=\s*".*"/
+                ]
+            };
+            
+            // Function to detect language based on patterns
+            function detectLanguage(text) {
+                let maxMatches = 0;
+                let detectedLang = 'javascript'; // default
+                
+                for (const [lang, patterns] of Object.entries(codePatterns)) {
+                    let matches = 0;
+                    patterns.forEach(pattern => {
+                        if (pattern.test(text)) {
+                            matches++;
+                        }
+                    });
+                    
+                    if (matches > maxMatches) {
+                        maxMatches = matches;
+                        detectedLang = lang;
+                    }
+                }
+                
+                return detectedLang;
+            }
+            
+            const isRawCode = Object.values(codePatterns).some(patterns => 
+                patterns.some(pattern => pattern.test(messageText))
+            ) && (messageText.includes('{') || messageText.includes(';') || messageText.includes('(') || 
+                  messageText.includes(':') || messageText.includes('<') || messageText.includes('SELECT'));
+            
+            console.log('Code block match:', codeBlockMatch);
+            console.log('Raw code detected:', isRawCode);
+            
+            if (codeBlockMatch) {
+                console.log('RENDERING WRAPPED CODE BLOCK');
+                const language = codeBlockMatch[1] || 'javascript';
+                const codeContent = codeBlockMatch[2];
+                
+                renderCodeBlock(message, timestamp, mainContainer, language, codeContent);
+                
+            } else if (isRawCode) {
+                console.log('RENDERING RAW CODE');
+                // Auto-detect language for raw code
+                const language = detectLanguage(messageText);
+                console.log('Detected language:', language);
+                
+                renderCodeBlock(message, timestamp, mainContainer, language, messageText);
+                
+            } else {
+                console.log('RENDERING REGULAR MESSAGE');
+                // Messenger-style layout - own messages on right, others on left
+                const isOwnMessage = message.name === name;
+                const chatItem = document.createElement('div');
+                let processedMessage = escapeHtml(messageText);
+                if (message.mentions) {
+                    message.mentions.forEach(mention => {
+                        const regex = new RegExp(`@${mention}\\b`, 'gi');
+                        processedMessage = processedMessage.replace(regex, `<span class="text-yellow-400 bg-yellow-900/30 px-1 rounded">@${mention}</span>`);
+                    });
+                }
+                
+                if (isOwnMessage) {
+                    // Own message - right aligned
+                    chatItem.className = `mb-3 flex justify-end group`;
+                    chatItem.innerHTML = `
+                        <div class="max-w-xs sm:max-w-md lg:max-w-lg">
+                            <div class="text-xs text-gray-400 mb-1 text-right">
+                                <span class="font-bold text-green-400">${message.name}</span>
+                                <span class="ml-2">${timestamp}</span>
+                            </div>
+                            <div class="relative">
+                                ${message.replyTo ? `
+                                <div class="bg-blue-700 px-3 py-2 mb-2 rounded-lg border-l-2 border-purple-400">
+                                    <div class="text-xs text-blue-200 mb-1">↩ Replying to <span class="font-bold">${message.replyTo.username}</span></div>
+                                    <div class="text-xs text-blue-100 opacity-75">${message.replyTo.message.length > 50 ? message.replyTo.message.substring(0, 50) + '...' : message.replyTo.message}</div>
+                                </div>
+                                ` : ''}
+                                <div class="bg-blue-600 text-white px-4 py-2 rounded-2xl rounded-br-md font-mono text-sm leading-relaxed whitespace-pre-wrap ${isMentioned ? 'ring-2 ring-yellow-400' : ''}">${processedMessage}</div>
+                                <button class="reply-btn opacity-0 group-hover:opacity-100 absolute -left-8 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-purple-400 text-sm transition-all duration-200" data-message='${JSON.stringify({name: message.name, message: messageText, timestamp: timestamp})}' title="Reply">↩</button>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // Others' messages - left aligned
+                    chatItem.className = `mb-3 flex justify-start group`;
+                    chatItem.innerHTML = `
+                        <div class="max-w-xs sm:max-w-md lg:max-w-lg">
+                            <div class="text-xs text-gray-400 mb-1">
+                                <span class="font-bold text-green-400">${message.name}</span>
+                                <span class="ml-2">${timestamp}</span>
+                            </div>
+                            <div class="relative">
+                                ${message.replyTo ? `
+                                <div class="bg-gray-600 px-3 py-2 mb-2 rounded-lg border-l-2 border-purple-400">
+                                    <div class="text-xs text-gray-300 mb-1">↩ Replying to <span class="font-bold">${message.replyTo.username}</span></div>
+                                    <div class="text-xs text-gray-400 opacity-75">${message.replyTo.message.length > 50 ? message.replyTo.message.substring(0, 50) + '...' : message.replyTo.message}</div>
+                                </div>
+                                ` : ''}
+                                <div class="bg-gray-700 text-gray-100 px-4 py-2 rounded-2xl rounded-bl-md font-mono text-sm leading-relaxed whitespace-pre-wrap ${isMentioned ? 'ring-2 ring-yellow-400 bg-yellow-900/40' : ''}">${processedMessage}</div>
+                                <button class="reply-btn opacity-0 group-hover:opacity-100 absolute -right-8 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-purple-400 text-sm transition-all duration-200" data-message='${JSON.stringify({name: message.name, message: messageText, timestamp: timestamp})}' title="Reply">↩</button>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                mainContainer.appendChild(chatItem);
+            }
+            
+            // Smart scroll - only scroll if user is near bottom
+            const didScroll = smartScroll(mainContainer);
+            
+            // If didn't auto-scroll, show notification for new messages (except own messages)
+            if (!didScroll && message.username !== name) {
+                showNewMessageNotification();
+            }
+        }
+        
+        function renderCodeBlock(message, timestamp, mainContainer, language, codeContent) {
+            // Map detected language to Prism language names
+            const languageMap = {
+                'cpp': 'cpp',
+                'c': 'c',
+                'javascript': 'javascript',
+                'python': 'python',
+                'java': 'java',
+                'html': 'markup',  // Prism uses 'markup' for HTML
+                'css': 'css',
+                'sql': 'sql',
+                'php': 'php',
+                'json': 'json',
+                'xml': 'markup'   // Prism uses 'markup' for XML
+            };
+            
+            const prismLanguage = languageMap[language] || 'javascript';
+            console.log(`Rendering code block - detected: ${language}, prism: ${prismLanguage}`);
+            
+            // Check if it's own message
+            const isOwnMessage = message.name === name;
+            
+            // Create main wrapper with Messenger-style layout
+            const codeWrapper = document.createElement('div');
+            codeWrapper.className = `mb-4 flex ${isOwnMessage ? 'justify-end' : 'justify-start'} group`;
+            
+            // Create content container
+            const contentContainer = document.createElement('div');
+            contentContainer.className = 'max-w-2xl w-full relative';
+            
+            // User info header
+            const userHeader = document.createElement('div');
+            userHeader.className = `text-xs text-gray-400 mb-2 ${isOwnMessage ? 'text-right' : 'text-left'}`;
+            userHeader.innerHTML = `
+                <span class="text-green-400 font-bold">${message.name}</span>
+                <span class="ml-2">${timestamp}</span>
+                <span class="ml-2 text-blue-400">shared code</span>
+            `;
+            
+            // Reply section if this is a reply
+            let replySection = '';
+            if (message.replyTo) {
+                const replyBg = isOwnMessage ? 'bg-blue-700' : 'bg-gray-600';
+                const replyText = isOwnMessage ? 'text-blue-200' : 'text-gray-300';
+                const replySubText = isOwnMessage ? 'text-blue-100' : 'text-gray-400';
+                
+                replySection = `
+                    <div class="${replyBg} px-3 py-2 mb-3 rounded-lg border-l-2 border-purple-400">
+                        <div class="text-xs ${replyText} mb-1">↩ Replying to <span class="font-bold">${message.replyTo.username}</span></div>
+                        <div class="text-xs ${replySubText} opacity-75">${message.replyTo.message.length > 50 ? message.replyTo.message.substring(0, 50) + '...' : message.replyTo.message}</div>
+                    </div>
+                `;
+            }
+            
+            // Code block container
+            const codeBlock = document.createElement('div');
+            codeBlock.style.cssText = `
+                background: #0d1117;
+                border: 1px solid #21262d;
+                border-radius: 12px;
+                overflow: hidden;
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+                width: 100%;
+                margin: 0;
+                padding: 0;
+                position: relative;
+            `;
+            
+            // Header with language and copy button
+            const headerBar = document.createElement('div');
+            headerBar.style.cssText = `
+                background: #161b22;
+                border-bottom: 1px solid #21262d;
+                padding: 12px 16px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            `;
+            
+            const langLabel = document.createElement('span');
+            langLabel.style.cssText = `
+                color: #58a6ff;
+                font-size: 12px;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                font-family: 'Fira Code', monospace;
+            `;
+            langLabel.textContent = language;
+            
+            const copyButton = document.createElement('button');
+            copyButton.style.cssText = `
+                background: #238636;
+                color: white;
+                border: none;
+                padding: 6px 12px;
+                border-radius: 6px;
+                font-size: 12px;
+                font-weight: 500;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                transition: background-color 0.2s;
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            `;
+            copyButton.innerHTML = `Copy`;
+            
+            headerBar.appendChild(langLabel);
+            headerBar.appendChild(copyButton);
+            
+            // Code content area
+            const codeArea = document.createElement('pre');
+            codeArea.style.cssText = `
+                background: #0d1117;
+                color: #f0f6fc;
+                padding: 20px;
+                margin: 0;
+                overflow-x: auto;
+                font-family: 'Fira Code', 'Consolas', 'Monaco', monospace;
+                font-size: 14px;
+                line-height: 1.6;
+                white-space: pre;
+            `;
+            
+            const codeElement = document.createElement('code');
+            codeElement.className = `language-${prismLanguage}`;
+            codeElement.style.cssText = `
+                background: transparent;
+                color: inherit;
+                font-family: inherit;
+                font-size: inherit;
+                line-height: inherit;
+                white-space: pre;
+                display: block;
+            `;
+            codeElement.textContent = codeContent;
+            
+            codeArea.appendChild(codeElement);
+            
+            // Assemble the code block
+            codeBlock.appendChild(headerBar);
+            codeBlock.appendChild(codeArea);
+            
+            // Assemble the content
+            contentContainer.appendChild(userHeader);
+            if (replySection) {
+                const replyDiv = document.createElement('div');
+                replyDiv.innerHTML = replySection;
+                contentContainer.appendChild(replyDiv);
+            }
+            contentContainer.appendChild(codeBlock);
+            
+            // Add reply button
+            const replyButton = document.createElement('button');
+            replyButton.className = `reply-btn opacity-0 group-hover:opacity-100 absolute ${isOwnMessage ? '-left-8' : '-right-8'} top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-purple-400 text-sm transition-all duration-200`;
+            replyButton.setAttribute('data-message', JSON.stringify({name: message.name, message: `[Code: ${language}] ${codeContent.substring(0, 50)}...`, timestamp: timestamp}));
+            replyButton.setAttribute('title', 'Reply');
+            replyButton.textContent = '↩';
+            contentContainer.appendChild(replyButton);
+            
+            codeWrapper.appendChild(contentContainer);
+            
+            // Add to main container
+            mainContainer.appendChild(codeWrapper);
+            console.log('Code block added to DOM');
+            
+            // Copy functionality
+            copyButton.addEventListener('click', async () => {
+                try {
+                    await navigator.clipboard.writeText(codeContent);
+                    copyButton.textContent = 'Copied!';
+                    setTimeout(() => {
+                        copyButton.textContent = 'Copy';
+                    }, 2000);
+                } catch (err) {
+                    console.error('Copy failed:', err);
+                }
+            });
+            
+            // Apply syntax highlighting
+            requestAnimationFrame(() => {
+                console.log('=== DEBUG PRISM HIGHLIGHTING ===');
+                console.log('Prism available:', !!window.Prism);
+                console.log('Prism.highlightElement available:', !!window.Prism?.highlightElement);
+                console.log('Prism.languages available:', Object.keys(window.Prism?.languages || {}));
+                console.log('Target language:', prismLanguage);
+                console.log('Language available in Prism:', !!window.Prism?.languages?.[prismLanguage]);
+                
+                if (window.Prism && Prism.highlightElement) {
+                    console.log('Applying syntax highlighting for language:', prismLanguage);
+                    console.log('Code element class:', codeElement.className);
+                    console.log('Code content preview:', codeElement.textContent.substring(0, 100) + '...');
+                    
+                    try {
+                        // Try direct highlighting first
+                        Prism.highlightElement(codeElement);
+                        console.log('Prism.highlightElement completed');
+                        
+                        // Check if highlighting worked
+                        setTimeout(() => {
+                            const hasHighlighting = codeElement.innerHTML !== codeElement.textContent;
+                            console.log('Highlighting applied:', hasHighlighting);
+                            console.log('innerHTML length:', codeElement.innerHTML.length);
+                            console.log('textContent length:', codeElement.textContent.length);
+                            console.log('innerHTML preview:', codeElement.innerHTML.substring(0, 150) + '...');
+                            
+                            if (!hasHighlighting && window.Prism.languages[prismLanguage]) {
+                                console.log('Trying manual highlighting with Prism.highlight...');
+                                try {
+                                    const highlighted = Prism.highlight(codeContent, Prism.languages[prismLanguage], prismLanguage);
+                                    console.log('Manual highlight result length:', highlighted.length);
+                                    console.log('Manual highlight preview:', highlighted.substring(0, 150) + '...');
+                                    codeElement.innerHTML = highlighted;
+                                } catch (manualError) {
+                                    console.error('Manual highlighting failed:', manualError);
+                                }
+                            }
+                        }, 200);
+                    } catch (error) {
+                        console.error('Prism highlighting error:', error);
+                        console.log('Trying fallback with javascript...');
+                        try {
+                            codeElement.className = 'language-javascript';
+                            const jsHighlighted = Prism.highlight(codeContent, Prism.languages.javascript, 'javascript');
+                            codeElement.innerHTML = jsHighlighted;
+                        } catch (fallbackError) {
+                            console.error('Fallback highlighting failed:', fallbackError);
+                        }
+                    }
+                } else {
+                    console.error('Prism not available or highlightElement missing');
+                }
+                console.log('=== END DEBUG ===');
+            });
+        }
+        
+        function displayFileMessage(senderName, fileInfo) {
+            const isOwnMessage = senderName === name;
+            const chatItem = document.createElement('div');
+            const fileSize = formatFileSize(fileInfo.size);
+            const timestamp = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            if (isOwnMessage) {
+                // Own file - right aligned
+                chatItem.className = `mb-3 flex justify-end`;
+                chatItem.innerHTML = `
+                    <div class="max-w-xs sm:max-w-md lg:max-w-lg">
+                        <div class="text-xs text-gray-400 mb-1 text-right">
+                            <span class="text-green-400 font-bold">${senderName}</span>
+                            <span class="ml-2">${timestamp}</span>
+                        </div>
+                        <div class="bg-blue-600 text-white p-4 rounded-2xl rounded-br-md">
+                            <div class="flex items-center gap-3">
+                                <div class="text-2xl">${getFileIcon(fileInfo.originalname)}</div>
+                                <div class="flex-1">
+                                    <div class="text-white font-medium text-sm">${fileInfo.originalname}</div>
+                                    <div class="text-xs text-blue-100 opacity-75">${fileSize}</div>
+                                </div>
+                                <a href="${fileInfo.path}" class="px-3 py-1 bg-blue-700 hover:bg-blue-800 text-white text-xs rounded transition-colors" 
+                                   download="${fileInfo.originalname}">
+                                    Download
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                // Others' files - left aligned
+                chatItem.className = `mb-3 flex justify-start`;
+                chatItem.innerHTML = `
+                    <div class="max-w-xs sm:max-w-md lg:max-w-lg">
+                        <div class="text-xs text-gray-400 mb-1">
+                            <span class="text-green-400 font-bold">${senderName}</span>
+                            <span class="ml-2">${timestamp}</span>
+                        </div>
+                        <div class="bg-gray-700 text-gray-100 p-4 rounded-2xl rounded-bl-md">
+                            <div class="flex items-center gap-3">
+                                <div class="text-2xl">${getFileIcon(fileInfo.originalname)}</div>
+                                <div class="flex-1">
+                                    <div class="text-cyan-400 font-medium text-sm">${fileInfo.originalname}</div>
+                                    <div class="text-xs text-gray-400">${fileSize}</div>
+                                </div>
+                                <a href="${fileInfo.path}" class="px-3 py-1 bg-blue-600 hover:bg-blue-700 text-white text-xs rounded transition-colors" 
+                                   download="${fileInfo.originalname}">
+                                    Download
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            messageContainer.appendChild(chatItem);
+            
+            // Smart scroll for file messages
+            const didScroll = smartScroll(messageContainer);
+            
+            // If didn't auto-scroll, show notification for new messages (except own messages)
+            if (!didScroll && senderName !== name) {
+                showNewMessageNotification();
+            }
+        }
+
+        // =================================================================
+        // UTILITY FUNCTIONS
+        // =================================================================
+        
+        // Smart scroll function - only scroll if user is near bottom
+        function smartScroll(container) {
+            const scrollThreshold = 100; // pixels from bottom
+            const isNearBottom = container.scrollTop + container.clientHeight >= 
+                               container.scrollHeight - scrollThreshold;
+            
+            if (isNearBottom) {
+                container.scrollTop = container.scrollHeight;
+                return true; // scrolled
+            }
+            return false; // didn't scroll
+        }
+        
+        // Show notification when new message arrives but user didn't auto-scroll
+        function showNewMessageNotification() {
+            const notification = document.createElement('div');
+            notification.id = 'new-message-notification';
+            notification.innerHTML = `
+                <div class="fixed bottom-20 right-4 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg cursor-pointer z-50 animate-bounce">
+                    <div class="flex items-center gap-2">
+                        <span>📝 New message</span>
+                        <span class="text-xs opacity-75">Click to scroll down</span>
+                    </div>
+                </div>
+            `;
+            
+            // Remove existing notification
+            const existing = document.getElementById('new-message-notification');
+            if (existing) {
+                existing.remove();
+            }
+            
+            document.body.appendChild(notification);
+            
+            // Auto hide after 3 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 3000);
+            
+            // Click to scroll
+            notification.onclick = () => {
+                const messageContainer = document.getElementById('message-container');
+                messageContainer.scrollTop = messageContainer.scrollHeight;
+                notification.remove();
+            };
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function detectCodeLanguage(text) {
+            // This function is now simplified since we handle code blocks differently
+            return text.includes('```') ? 'code' : null;
+        }
+        
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+            else if (bytes < 1073741824) return (bytes / 1048576).toFixed(1) + ' MB';
+            else return (bytes / 1073741824).toFixed(1) + ' GB';
+        }
+        
+        function getFileIcon(filename) {
+            const ext = filename.toLowerCase().split('.').pop();
+            const iconMap = {
+                'jpg': '🖼️', 'jpeg': '🖼️', 'png': '🖼️', 'gif': '🖼️', 'svg': '🖼️',
+                'pdf': '📄', 'doc': '📃', 'docx': '📃', 'txt': '📝',
+                'xls': '📊', 'xlsx': '📊', 'csv': '📊',
+                'zip': '📦', 'rar': '📦', '7z': '📦',
+                'js': '⚡', 'html': '🌐', 'css': '🎨', 'py': '🐍',
+                'mp3': '🎵', 'mp4': '🎬', 'avi': '🎬'
+            };
+            return iconMap[ext] || '📄';
+        }
+
+        // =================================================================
+        // FILE HANDLING
+        // =================================================================
+        
+        function sendFile(fileObject) {
+            if (!fileObject) return;
+
+            const formData = new FormData();
+            formData.append('file', fileObject);
+            
+            fetch('/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(fileInfo => {
+                if (fileInfo.error) {
+                    throw new Error(fileInfo.error);
+                }
+                socket.emit('file-share', { name, room, fileInfo });
+                clearStagedFile();
+                
+                // Show success toast
+                createToast('success', 'File uploaded!', `${fileInfo.originalname} uploaded successfully`, {
+                    duration: 3000
+                });
+            })
+            .catch(error => {
+                console.error('Error uploading file:', error);
+                createToast('error', 'Upload failed', error.message || 'Error uploading file. Please try again.', {
+                    duration: 5000
+                });
+                clearStagedFile();
+            });
+        }
+        
+        function stageFile(file) {
+            if (file.size > 50 * 1024 * 1024) {
+                alert('File size must be less than 50MB');
+                return;
+            }
+
+            stagedFile = file;
+            previewFilename.textContent = file.name;
+            previewFilesize.textContent = formatFileSize(file.size);
+            filePreviewCard.style.display = 'block';
+            
+            // Safely add class
+            const inputArea = document.querySelector('#input-area');
+            if (inputArea) {
+                inputArea.classList.add('file-staged');
+            }
+            
+            // Don't set readOnly, just change placeholder and focus
+            chatMes.placeholder = 'File ready to send - press Enter to upload';
+            chatMes.value = ''; // Clear any text
+            
+            // Add click listener to file preview for focus
+            filePreviewCard.style.cursor = 'pointer';
+            filePreviewCard.onclick = () => {
+                chatMes.focus();
+                console.log('File preview clicked - focusing input');
+            };
+            
+            // Ensure focus is set properly with multiple attempts
+            setTimeout(() => {
+                chatMes.focus();
+                console.log('Chat input focused for file upload (immediate)');
+            }, 10);
+            
+            setTimeout(() => {
+                chatMes.focus();
+                console.log('Chat input focused for file upload (delayed)');
+            }, 100);
+        }
+        
+        function clearStagedFile() {
+            stagedFile = null;
+            filePreviewCard.style.display = 'none';
+            filePreviewCard.onclick = null; // Remove click listener
+            
+            // Safely remove class
+            const inputArea = document.querySelector('#input-area');
+            if (inputArea) {
+                inputArea.classList.remove('file-staged');
+            }
+            
+            chatMes.placeholder = 'Send a message... (Enter to send, Shift+Enter for new line, @ to mention)';
+            fileUpload.value = '';
+            chatMes.focus();
+        }
+
+        // =================================================================
+        // EVENT LISTENERS
+        // =================================================================
+        
+        // Initialize UI
+        updateNotificationButton();
+        updateMuteButton();
+        
+        // Notification button click handler
+        notificationBtn.addEventListener('click', () => {
+            isNotificationEnabled = !isNotificationEnabled;
+            localStorage.setItem('notifications_enabled', isNotificationEnabled.toString());
+            socket.emit('toggle-notifications', isNotificationEnabled);
+            updateNotificationButton();
+            
+            if (isNotificationEnabled) {
+                requestNotificationPermission();
+            }
+        });
+        
+        // Mute button click handler  
+        muteBtn.addEventListener('click', () => {
+            isMutedAll = !isMutedAll;
+            localStorage.setItem('muted_all', isMutedAll.toString());
+            socket.emit('toggle-mute', isMutedAll);
+            updateMuteButton();
+        });
+        
+        // Request notification permission on load
+        if (isNotificationEnabled) {
+            requestNotificationPermission();
+        }
+        
+        // File upload
+        fileUpload.addEventListener('change', function(e) {
+            if (this.files.length > 0) {
+                stageFile(this.files[0]);
+                
+                // Multiple attempts to ensure focus
+                setTimeout(() => {
+                    chatMes.focus();
+                    console.log('First focus attempt');
+                }, 50);
+                
+                setTimeout(() => {
+                    chatMes.focus();
+                    console.log('Second focus attempt');
+                }, 200);
+                
+                setTimeout(() => {
+                    chatMes.focus();
+                    console.log('Third focus attempt - should be focused now');
+                }, 500);
+            }
+        });
+        
+        cancelFileBtn.addEventListener('click', clearStagedFile);
+        
+        // Message sending
+        function sendMessage() {
+            console.log('sendMessage called - staged file:', !!stagedFile);
+            if (!name || !room) return;
+            
+            if (stagedFile) {
+                console.log('Sending staged file...');
+                sendFile(stagedFile);
+                return;
+            }
+            
+            const message = chatMes.value.trim();
+            if (message) {
+                // Send message with reply info if replying
+                const messageData = {
+                    name, 
+                    room, 
+                    message,
+                    replyTo: replyingTo ? {
+                        username: replyingTo.name,
+                        message: replyingTo.message,
+                        timestamp: replyingTo.timestamp
+                    } : null
+                };
+                
+                socket.emit('on-chat', messageData);
+                chatMes.value = '';
+                resetTextareaHeight();
+                hideMentionDropdown();
+                
+                // Cancel reply after sending
+                if (replyingTo) {
+                    cancelReply();
+                }
+            }
+        }
+        
+        chatMes.addEventListener('keydown', (e) => {
+            console.log('Key pressed:', e.key, 'Shift:', e.shiftKey, 'Staged file:', !!stagedFile);
+            
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                console.log('Calling sendMessage...');
+                sendMessage();
+                return;
+            }
+            
+            // If file is staged, prevent typing except Enter and navigation keys
+            if (stagedFile && !['Enter', 'Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Tab', 'Escape'].includes(e.key)) {
+                e.preventDefault();
+                return;
+            }
+            
+            // Shift+Enter allows new lines only when no file is staged
+        });
+        
+        chatForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            sendMessage();
+        });
+
+        // Drag and drop
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            document.addEventListener(eventName, e => {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+        });
+
+        document.addEventListener('dragenter', function(e) {
+            if (e.dataTransfer.types.includes('Files')) {
+                dragCounter++;
+                if (dragCounter === 1) {
+                    dragOverlay.style.display = 'flex';
+                    setTimeout(() => dragOverlay.classList.add('active'), 10);
+                }
+            }
+        });
+
+        document.addEventListener('dragleave', function(e) {
+            if (e.dataTransfer.types.includes('Files')) {
+                dragCounter--;
+                if (dragCounter <= 0) {
+                    dragCounter = 0;
+                    dragOverlay.classList.remove('active');
+                    setTimeout(() => {
+                        if (dragCounter === 0) {
+                            dragOverlay.style.display = 'none';
+                        }
+                    }, 200);
+                }
+            }
+        });
+
+        document.addEventListener('drop', function(e) {
+            dragCounter = 0;
+            dragOverlay.classList.remove('active');
+            setTimeout(() => dragOverlay.style.display = 'none', 200);
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                const file = files[0];
+                if (file.size > 50 * 1024 * 1024) {
+                    alert('File size must be less than 50MB');
+                    return;
+                }
+                sendFile(file);
+            }
+        });
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Auto-resize textarea
+        chatMes.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 128) + 'px'; // Max 128px (about 5 lines)
+        });
+
+        // Reset textarea height when message is sent
+        function resetTextareaHeight() {
+            chatMes.style.height = 'auto';
+            chatMes.style.height = '24px'; // Reset to single line
+        }
+    </script>
+</body>
+</html> 
