@@ -1657,7 +1657,7 @@
             const formData = new FormData();
             formData.append('file', fileObject);
             
-            fetch('/upload', {
+            fetch('/api/upload', {
                 method: 'POST',
                 body: formData
             })
@@ -1668,14 +1668,17 @@
                 return response.json();
             })
             .then(fileInfo => {
-                if (fileInfo.error) {
-                    throw new Error(fileInfo.error);
+                if (!fileInfo.success || fileInfo.error) {
+                    throw new Error(fileInfo.error || 'Upload failed');
                 }
-                socket.emit('file-share', { name, room, fileInfo });
+                
+                // Use fileInfo.file for the actual file data
+                const actualFileInfo = fileInfo.file || fileInfo;
+                socket.emit('file-shared', { name, room, fileInfo: actualFileInfo });
                 clearStagedFile();
                 
                 // Show success toast
-                createToast('success', 'File uploaded!', `${fileInfo.originalname} uploaded successfully`, {
+                createToast('success', 'File uploaded!', `${actualFileInfo.originalname} uploaded successfully`, {
                     duration: 3000
                 });
             })

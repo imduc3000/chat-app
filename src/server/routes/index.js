@@ -7,7 +7,6 @@
  */
 
 const path = require('path');
-const { fileUploadHandler } = require('./fileUpload');
 
 /**
  * Setup all routes for the Express application
@@ -25,6 +24,10 @@ function setupRoutes(app) {
 
     // API routes
     app.use('/api', require('./api'));
+
+    // Backward compatibility for old upload endpoint
+    const { uploadFile } = require('./fileUpload');
+    app.post('/upload', uploadFile);
 
     // Health check endpoint
     app.get('/health', (req, res) => {

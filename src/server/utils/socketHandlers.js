@@ -7,11 +7,9 @@
  */
 
 const { ChatManager } = require('./chatManager');
-const { RoomManager } = require('./roomManager');
 
-// Initialize managers
+// Initialize managers - ChatManager will handle RoomManager internally
 const chatManager = new ChatManager();
-const roomManager = new RoomManager();
 
 /**
  * Setup Socket.IO event handlers
@@ -24,7 +22,7 @@ function setupSocketHandlers(io) {
         // Handle room joining
         socket.on('join-room', async ({ name, room }) => {
             try {
-                await roomManager.handleUserJoin(socket, name, room, io);
+                await chatManager.roomManager.handleUserJoin(socket, name, room, io);
             } catch (error) {
                 console.error('❌ Error in join-room:', error);
                 socket.emit('error', { message: 'Failed to join room' });
@@ -53,12 +51,12 @@ function setupSocketHandlers(io) {
 
         // Handle user preferences
         socket.on('update-preferences', (preferences) => {
-            roomManager.updateUserPreferences(socket.id, preferences);
+            chatManager.roomManager.updateUserPreferences(socket.id, preferences);
         });
 
         // Handle disconnection
         socket.on('disconnect', () => {
-            roomManager.handleUserDisconnect(socket, io);
+            chatManager.roomManager.handleUserDisconnect(socket, io);
             console.log(`👋 User disconnected: ${socket.id}`);
         });
     });
